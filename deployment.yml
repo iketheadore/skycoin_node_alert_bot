@@ -1,0 +1,43 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: skycoin-node-alert-bot
+  namespace: default
+  labels:
+    app: skycoin-node-alert-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skycoin-node-alert-bot
+  template:
+    metadata:
+      labels:
+        app: skycoin-node-alert-bot
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: skycoin-node-alert-bot
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+        image: registry.skycoin.com/skycoin-node-alert-bot
+        env:
+        - name: BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: skycoin-node-alert-bot-secret
+              key: token
+        - name: BOT_CHATID
+          valueFrom:
+            secretKeyRef:
+              name: skycoin-node-alert-bot-secret
+              key: chatid
+        args:
+        - "-token"
+        - "$(BOT_TOKEN)"
+        - "-chatid"
+        - "$(BOT_CHATID)"
